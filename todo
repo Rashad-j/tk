@@ -1,0 +1,13 @@
+- move to using env variables
+
+The plan:
+
+1. automate grabbing video urls from tiktok
+2. get a public url for videos from rapidapi so that we can download videos without watermark
+3. Use transloadit to download these videos directly
+4. Use transloadit to change the video dimensions, length, etc
+5. Use transloadit to merge short videos into only one - and download it?
+6. Publish the result video to instagram post and reels
+7. Publish the result video to youtube videos and shorts
+8. Use Cron jobs to run everyday
+9. Use Amazon Web Services to run the program
