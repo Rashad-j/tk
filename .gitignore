@@ -1,1 +1,9 @@
-.env
+.vscode
+env.env
+todo
+Dockerfile
+tk.zip
+media/
+ffmpeg/*
+tiktok/*
+!tiktok/*.go

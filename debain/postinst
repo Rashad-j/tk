@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+SERVICE=tiktok-uploader
+
+# service unit
+systemctl daemon-reload
+systemctl enable ${SERVICE}
+systemctl start ${SERVICE}
+
+exit 0

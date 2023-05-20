@@ -1,0 +1,9 @@
+Source: tiktok-uploader
+Section: custom
+Priority: extra
+Maintainer: Rashad Jamara <rj@email.donttell>
+Build-Depends: debhelper (>= 8.0.0)
+
+Package: tiktok-uploader
+Architecture: all
+Description: Tiktok Uploader V1

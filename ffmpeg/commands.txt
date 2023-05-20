@@ -1,0 +1,88 @@
+# identify silence in the video as a quote separator
+ffmpeg -i stoic.mp4 -af silencedetect=noise=-30dB:d=3 -f null - 2> silence.txt
+ffmpeg -i ffmpeg/input/input.mp4 -af silencedetect=noise=-40dB:d=3 -f null - 2> ffmpeg/silence.txt
+
+# worked the best so far 
+ffmpeg -i ffmpeg/input/input.mp4 -af silencedetect=noise=-20dB:d=3 -f null - 2> ffmpeg/silence.txt
+
+# extract audio from the video
+ffmpeg -i input.mp4 -vn -c:a flac output.flac
+ffmpeg -i ffmpeg/input/input.mp4 -vn -c:a flac ffmpeg/output/output.flac
+ffmpeg -i tiktok/videos/mindset-game/1.mp4 -vn -c:a flac tiktok/videos/mindset-game/1.flac
+
+
+# merge audios
+ffmpeg -i out.mp4 -i media/tiktok/0.mp3 -filter_complex "[0:a]volume=0.5[a1];[1:a][a1]amerge=inputs=2[a]" -map 0:v -map "[a]" -c:v copy -c:a aac -shortest -tune film output.mp4 -y
+ffmpeg -i out.mp4 -i media/tiktok/0.mp3 -filter_complex "[1:a]volume=0.4[a0];[0:a][a0]amix=inputs=2:duration=longest" -map 0:v:0 -map "[a]" -c:v copy -c:a aac output.mp4 -y
+ffmpeg -i out.mp4 -i media/tiktok/0.mp3 -filter_complex "[0:a]volume=1[a];[1:a]volume=0.1[b];[a][b]amerge=inputs=2[aout]" -map 0:v:0 -map "[aout]" -c:v copy -c:a aac output.mp4 -y
+# loop audio to match the video length
+ffmpeg -i out.mp4 -stream_loop -1 -i media/tiktok/0.mp3 -filter_complex "[0:a]volume=1[a];[1:a]volume=0.1[b];[a][b]amerge=inputs=2[aout]" -map 0:v:0 -map "[aout]" -c:v copy -c:a aac output.mp4 -y
+
+
+
+# with loop
+ffmpeg -i input/tiktok/tk.mp4 -i output/audio/audio3.flac -filter_complex "[0:a]volume=0.5[a1];[1:a][a1]amerge=inputs=2[a]" -map "[0:v]loop=loop=-1:size=9999" -map "[a]" -c:v copy -c:a aac -shortest -tune film output.mp4 -y
+# this loop the video but removes the audio from the video
+# the audio longer the audio, the video will loop
+ffmpeg  -stream_loop -1 -i media/pexels/tk.mp4 -i media/quote/audio0.flac -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -shortest -tune film out.mp4 -y
+# the video is longer than the audio
+ffmpeg  -stream_loop -1 -i media/pexels/video00.mp4 -i media/quote/audio1.flac -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -shortest -tune film out.mp4 -y
+# another example
+ffmpeg -stream_loop -1 -i 20s.ts -i 120s.mp3 -map 0:v:0 -map 1:a:0 -shortest -c copy output.mp4
+
+# add subtitle
+ffmpeg -i output/video/output.mp4 -vf "subtitles=output/transcription/audio3.srt:force_style='Alignment=6,Fontsize=20'" -c:a copy output_video.mp4
+
+ffmpeg -i ffmpeg/media/withTkAudio.mp4 -vf "subtitles=ffmpeg/media/srtFile.srt:force_style='Alignment=10,Fontname=Bebas Neue,Fontsize=20,Outline=0.5,PrimaryColour=&H0000FFFF''" output_force_style.mp4 -y
+
+ffmpeg -i "imput.mp4" -lavfi "subtitles=subtitles.srt:force_style='Alignment=0,OutlineColour=&H100000000,BorderStyle=3,Outline=1,Shadow=0,Fontsize=18,MarginL=5,MarginV=25'" -crf 1 -c:a copy "output.mp4"
+
+
+
+
+# testing with drawtext
+ffmpeg -i output/video/output.mp4 -vf "drawtext=text='Hello World, this is me again':fontcolor=white:fontsize=20:fontname=Bebas Neue:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,1,3)'"
+ffmpeg -i output/video/output.mp4 -vf "drawtext=text='Hello World':fontcolor=white:fontsize=24:font=Bebas Neue:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(t,1,3)':expansion=1.5" -codec:a copy output.mp4 -y
+
+ffmpeg -i output/video/output.mp4  -vf "[in]drawtext=font=Bebas Neue:text='r':fontcolor=orange:fontsize=100:x=(w-text_w)/2+0:y=0:enable='between(t,0, 2)',drawtext=font=Bebas Neue:text='r':fontcolor=orange:fontsize=100:x=(w-text_w)/2+20:y=0:enable='between(t,2, 4)',drawtext=font=Bebas Neue:text='r':fontcolor=orange:fontsize=100:x=(w-text_w)/2+40:y=0:enable='between(t,4, 6)'[out]" -codec:a copy multiple.mp4 -y
+
+ffmpeg -i input.mp4 -vf "ass=ffmpeg/media/ass.ass,drawtext=enable='between(t,1,5)':fontfile=Arial.ttf:fontcolor=white:fontsize=24:x=(w-text_w)/2:y=(h-text_h)/2" -codec:a copy output.mp4
+
+
+# generating .ass file
+ffmpeg -i ffmpeg/media/srtFile.srt ffmpeg/media/ass.ass -y
+ffmpeg -i ffmpeg/media/withTkAudio.mp4 -vf ass=ffmpeg/media/ass.ass ffmpeg/media/withSubtitle.mp4 -y
+
+
+# drawing text from top to down
+drawtext="fontname=Bebas Neue: text='Test Text':x=100: y=50: fontsize=24: fontcolor=yellow@0.2:
+ffmpeg -i ffmpeg/media/withTkAudio.mp4 -vf "drawtext=fontname=Bebas Neue:text='Test Text':x=100:y=50:fontsize=24:fontcolor=yellow@0.2, drawtext=fontname=Bebas Neue:text='Test Text':x=100:y=100:fontsize=24:fontcolor=yellow@0.2, drawtext=fontname=Bebas Neue:text='Test Text':x=100:y=150:fontsize=24:fontcolor=yellow@0.2" ffmpeg/media/withSubtitle.mp4 -y
+ffmpeg -i ffmpeg/media/withTkAudio.mp4 -vf "drawtext=fontfile=ffmpeg/fonts/BebasNeue-Regular.ttf:text='Test Text 1':x=100:y=50:fontsize=164" -c:a copy ffmpeg/media/withSubtitle.mp4 -y
+
+# multiple text lines <<< this works NEXT: see https://ffmpeg.org/ffmpeg-filters.html#drawtext-1
+
+ffmpeg -i ffmpeg/media/withTkAudio.mp4 -vf "drawtext=fontfile=ffmpeg/fonts/BebasNeue-Regular.ttf:text='Year 2023, Day 135':x=(w-text_w)/2:y=(text_h+150):fontsize=90:fontcolor=0xFFFF00, drawtext=fontfile=ffmpeg/fonts/BebasNeue-Regular.ttf:text='Time 23':x=(w-text_w)/2:y=(text_h+text_h+180):fontsize=90:fontcolor=0xFFFF00" -c:a copy ffmpeg/media/withSubtitle.mp4 -y
+
+# merge files
+ffmpeg -f concat -safe 0 -i ffmpeg/media/list.txt -c:a aac -b:a 256k -c:v libx264 -crf 18 -preset slow output.mp4 -y
+ffmpeg -f concat -safe 0 -i ffmpeg/media/list.txt -c:v libx264 -b:v 5000k -preset veryfast -c:a aac -b:a 192k output.mp4 -y
+
+
+# a photo to a video
+ffmpeg -loop 1 -i media/photos/2.jpeg -i media/quote/audio0.flac -tune stillimage -c:v libx264 -preset ultrafast -crf 18 -pix_fmt yuv420p -vf "scale='if(gt(a,3840/2160),3840,trunc(oh*a/2)*2)':'if(gt(a,3840/2160),trunc(ow/a/2)*2,2160)',format=yuv420p" -c:a copy -shortest output.mp4 -y
+
+ffmpeg -loop 1 -i media/photos/2.jpeg -i media/quote/audio0.flac -c:a copy -shortest output.mp4 -y
+ffmpeg -loop 1 -i media/photos/2.jpeg -i media/quote/audio0.flac -c:v libx264 -preset slow -tune stillimage -crf 18 -c:a flac -strict -2 output.mp4 -y
+ffmpeg -loop 1 -i media/photos/40.jpeg -i media/quote/audio0.flac -c:v libx264 -preset medium -tune stillimage -crf 23 -c:a flac -strict -2 output.mp4 -y
+ffmpeg -loop 1 -i media/photos/40.jpeg -i media/quote/audio0.flac -c:v libx264 -preset high -tune stillimage -crf 23 -c:a flac -strict -2 output.mp4 -y
+
+ffmpeg -framerate 10 -i media/photos/5.jpeg output.mp4 -y
+ffmpeg -stream_loop -1 -i output.mp4 -i media/quote/audio0.flac -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -shortest -tune film long.mp4 -y
+ffmpeg -stream_loop -1 -i output.mp4 -i media/quote/audio0.flac -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -shortest -b:v 1M -tune film small.mp4 -y
+
+# try these to reduce size: https://unix.stackexchange.com/questions/28803/how-can-i-reduce-a-videos-size-with-ffmpeg
+ffmpeg -i long.mp4 -vcodec libx265 -crf 28 reduced.mp4
+ffmpeg -i output.mp4 -vcodec libx265 -crf 28 reduced.mp4
+ffmpeg -i output.mp4 -b 100k reduced.mp4 -y
+
+ffmpeg -framerate 10 -i media/photos/2.jpeg output.mp4 -y

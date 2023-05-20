@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+SERVICE=tiktok-uploader
+
+# remove link top service directory
+systemctl disable ${SERVICE}
+systemctl stop ${SERVICE}
+
+exit 0

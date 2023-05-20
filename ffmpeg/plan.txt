@@ -1,0 +1,26 @@
+- Get videos from quotes on youtube
+- Cut the quote into multiple voices
+- Get the music from tiktok viral videos
+- Get short videos - something that is related to motivation
+- Transcribe videos - get a text of the voice
+    - In future use the original video from youtube, transcribe it, then use some text to speech service
+- Add the overlay text on the video
+- Add a logo watermark
+- Add a some text, e.g. subscribe, or post number #600
+- Publish to youtube, instagram, and tiktok
+- Use open ai to generate some nice hashtags and description
+- Merge all videos from the same day in one, and publish them to youtube
+    - Use the open ai to generate nice description for the videos
+
+
+Some updates
+- Get the videos with not
+ text
+- Get just the audios from https://www.tiktok.com/@llxcuo
+- Remove the original audio from the video
+- Add the audio we received from the first videos from that tiktok profile
+- Do the rest of the steps as explained above
+
+An IDEA 
+- Based on the audio length, merge some audios, then it would be easy to add the audio, the narrative, and subtitle
+- Use horizontal orientation videos for youtube?

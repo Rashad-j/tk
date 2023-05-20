@@ -1,0 +1,22 @@
+[Unit]
+Description=Tiktok Uploader V1
+After=network.target
+
+[Service]
+Type=simple
+User=daemon
+Group=daemon
+Environment="LOG_NO_COLOR=true"
+EnvironmentFile=-/etc/tiktok/tiktok-upload.env
+RuntimeDirectory=tiktok-uploader
+RuntimeDirectoryMode=775
+ExecStart=/usr/bin/tiktok-uploader
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=tiktok-uploader
+Restart=always
+TimeoutStopSec=10s
+LimitNOFILE=1048560
+
+[Install]
+WantedBy=multi-user.target

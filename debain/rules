@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+override_dh_usrlocal:
+
+override_dh_installinit:
+	dh_installinit $@ --name=tiktok-uploader
+
+%:
+	dh $@
